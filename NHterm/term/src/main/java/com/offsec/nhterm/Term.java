@@ -1679,6 +1679,8 @@ public class Term extends Activity implements UpdateCallback, SharedPreferences.
             buttonView.getBackground().setAlpha(255);
     }
 
+
+
     public void onClick(View v) {
         EmulatorView view = getCurrentEmulatorView();
         switch (v.getId()) {
