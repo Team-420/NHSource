@@ -35,10 +35,8 @@ dependencies {
 
 android {
 
-    compileSdkVersion 30
+    compileSdkVersion 29
     buildToolsVersion '30.0.2'
-    useLibrary 'org.apache.http.legacy'
-    useLibrary 'org.apache.http.conn.scheme.SchemeRegistry'
     dataBinding {
         enabled = true
     }

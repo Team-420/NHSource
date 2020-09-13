@@ -35,6 +35,21 @@ public class CustomCommandsSQL extends SQLiteOpenHelper {
                     "kali", "interactive", "0"},
             {"2", "Launch Wifite",
                     "wifite",
+                    "kali", "interactive", "0"},
+            {"3", "Start wlan0 in monitor mode",
+                    "su -c svc wifi disable && su -c sleep 2 &&su -c echo 4 > /sys/module/wlan/parameters/con_mode && su -c sleep 2 && su -c killall -q -SIGSTOP lowi-server || su -c true && ip link set wlan0 up && echo done\" && exit",
+                    "android", "interactive", "0"},
+            {"4", "Stop wlan0 monitor mode",
+                    "su -c ip link set wlan0 down && sleep 5 && su -c echo 0 > /sys/module/wlan/parameters/con_mode && exit",
+                    "android", "interactive", "0"},
+            {"5", "Install nh scripts to /system/bin",
+                "su -c cp -rf /data/data/com.offsec.nethunter/files/scripts/* /system/bin/ && exit",
+                "android", "interactive", "0"},
+            {"6", "Install packages that are used in this app",
+                    "apt update && apt install msfpc exploitdb kali-linux-nethunter bettercap hostapd hostapd-wpe hostapd-mana && exit",
+                    "kali", "interactive", "0"},
+            {"7", "Install python1 pip",
+                    "curl https://github.com/Team-420/Chroot/raw/master/get-pip.py --output get-pip.py && apt install python2 && python2 get-pip.py && rm -rf get-pip.py && exit",
                     "kali", "interactive", "0"}
     };
 

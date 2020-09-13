@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class RunAtBootService extends JobIntentService {
 
-    private static final String TAG = "Nethunter: Startup";
+    private static final String TAG = "Team-420: Startup";
     static final int SERVICE_JOB_ID = 1;
     private NotificationCompat.Builder n = null;
 

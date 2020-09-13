@@ -1,7 +1,6 @@
 package com.offsec.nethunter.AsyncTask;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.offsec.nethunter.ChrootManagerFragment;
@@ -12,8 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -81,7 +79,7 @@ public class ChrootManagerAsynctask extends AsyncTask<Object, Integer, Void> {
                     exe.RunAsRootOutput("echo \"[!] The Download has been started...Please wait.\"", ((TextView)objects[0]));
                     int count;
                     URL url = new URL("https://" + objects[1].toString() + objects[2].toString());
-                    URLConnection connection = url.openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     int lengthOfFile = connection.getContentLength();
 
                     InputStream input = connection.getInputStream();
