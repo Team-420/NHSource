@@ -30,8 +30,8 @@ public class CustomCommandsSQL extends SQLiteOpenHelper {
     private static final String TABLE_NAME = DATABASE_NAME;
     private static ArrayList<String> COLUMNS = new ArrayList<>();
     private static final String[][] customcommandsData = {
-            {"1", "Update Kali Metapackages",
-                    "apt update && apt-get -y upgrade",
+            {"1", "Start wlan1 in monitor mode",
+                    "ip link set wlan1 down && iw wlan1 set monitor control && ip link set wlan1 up;exit",
                     "kali", "interactive", "0"},
             {"2", "Launch Wifite",
                     "wifite",
@@ -45,11 +45,11 @@ public class CustomCommandsSQL extends SQLiteOpenHelper {
             {"5", "Install nh scripts to /system/bin",
                 "su -c cp -rf /data/data/com.offsec.nethunter/files/scripts/* /system/bin/ && exit",
                 "android", "interactive", "0"},
-            {"6", "Install packages that are used in this app",
-                    "apt update && apt install msfpc exploitdb kali-linux-nethunter bettercap hostapd hostapd-wpe hostapd-mana && exit",
+            {"6", "Install and upgrade nethunter",
+                    "apt update && apt upgrade -y && apt install -y msfpc exploitdb kali-linux-nethunter libpcap-dev bettercap hostapd hostapd-wpe hostapd-mana python-dev && echo ' If something here fails run python1 setup ' && pip install twisted && pip install pyopenssl && pip install scapy && pip install dnspython && pip install pcapy && pip install service_identity && pip install dnspython && update-alternatives --set iptables /usr/sbin/iptables-legacy && exit",
                     "kali", "interactive", "0"},
             {"7", "Install python1 pip",
-                    "curl https://github.com/Team-420/Chroot/raw/master/get-pip.py --output get-pip.py && apt install python2 && python2 get-pip.py && rm -rf get-pip.py && exit",
+                    "wget https://raw.githubusercontent.com/Team-420/Chroot/master/get-pip.py && apt install -y python2 && python2 get-pip.py && rm -rf get-pip.py && exit",
                     "kali", "interactive", "0"}
     };
 

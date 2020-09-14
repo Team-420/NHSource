@@ -43,7 +43,7 @@ public class ManaFragment extends Fragment {
     private ViewPager mViewPager;
 
     private Integer selectedScriptIndex = 0;
-    private final CharSequence[] scripts = {"mana-nat-full", "mana-nat-simple", "mana-nat-bettercap", "mana-nat-simple-bdf", "hostapd-wpe", "hostapd-wpe-karma"};
+    private final CharSequence[] scripts = {"mana-nat-full", "mana-nat-simple", "hostapd-wpe", "hostapd-wpe-karma"};
     private static final String TAG = "ManaFragment";
     private static final String ARG_SECTION_NUMBER = "section_number";
     private String configFilePath;
@@ -146,32 +146,12 @@ public class ManaFragment extends Fragment {
                     }
                     break;
                 case 2:
-                    NhPaths.showMessage(context, "Starting MANA Bettercap");
-                    intentClickListener_NH(NhPaths.makeTermTitle("MANA-BETTERCAP") + "/usr/bin/start-nat-transproxy-lollipop.sh");
+                    NhPaths.showMessage(context, "Starting HOSTAPD-WPE");
+                    intentClickListener_NH(NhPaths.makeTermTitle("HOSTAPD-WPE") + "ifconfig wlan1 up && /usr/sbin/hostapd-wpe /sdcard/nh_files/configs/hostapd-wpe.conf");
                     break;
                 case 3:
-                    NhPaths.showMessage(context, "Starting MANA NAT SIMPLE && BDF");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        intentClickListener_NH(NhPaths.makeTermTitle("MANA-BDF") + "/usr/share/mana-toolkit/run-mana/start-nat-simple-bdf-lollipop.sh");
-                    } else {
-                        intentClickListener_NH(NhPaths.makeTermTitle("MANA-BDF") + "/usr/share/mana-toolkit/run-mana/start-nat-simple-bdf-kitkat.sh");
-                    }
-                    // we wait ~10 secs before launching msf
-                    new android.os.Handler().postDelayed(
-                            new Runnable() {
-                                public void run() {
-                                    NhPaths.showMessage(context, "Starting MSF with BDF resource.rc");
-                                    intentClickListener_NH(NhPaths.makeTermTitle("MSF") + "msfconsole -q -r /usr/share/bdfproxy/bdfproxy_msf_resource.rc");
-                                }
-                            }, 10000);
-                    break;
-                case 4:
-                    NhPaths.showMessage(context, "Starting HOSTAPD-WPE");
-                    intentClickListener_NH(NhPaths.makeTermTitle("HOSTAPD-WPE") + "ifconfig wlan1 up && /usr/bin/hostapd-wpe /sdcard/nh_files/configs/hostapd-wpe.conf");
-                    break;
-                case 5:
                     NhPaths.showMessage(context, "Starting HOSTAPD-WPE with Karma");
-                    intentClickListener_NH(NhPaths.makeTermTitle("HOSTAPD-WPE-KARMA") + "ifconfig wlan1 up && /usr/bin/hostapd-wpe -k /sdcard/nh_files/configs/hostapd-wpe.conf");
+                    intentClickListener_NH(NhPaths.makeTermTitle("HOSTAPD-WPE-KARMA") + "ifconfig wlan1 up && /usr/sbin/hostapd-wpe -k /sdcard/nh_files/configs/hostapd-wpe.conf");
                     break;
                 default:
                     NhPaths.showMessage(context, "Invalid script!");
@@ -212,7 +192,7 @@ public class ManaFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return 8;
+            return 5;
         }
 
         @Override
@@ -228,14 +208,8 @@ public class ManaFragment extends Fragment {
                     return new DnsspoofFragment();
                 case 4:
                     return new ManaNatFullFragment();
-                case 5:
-                    return new ManaNatSimpleFragment();
-                case 6:
-                    return new ManaNatBettercapFragment();
-                case 7:
-                    return new BdfProxyConfigFragment();
                 default:
-                    return new ManaStartNatSimpleBdfFragment();
+                    return new ManaNatSimpleFragment();
             }
         }
 
@@ -252,14 +226,8 @@ public class ManaFragment extends Fragment {
                     return "dnsspoof.conf";
                 case 4:
                     return "nat-mana-full";
-                case 5:
-                    return "nat-mana-simple";
-                case 6:
-                    return "nat-mana-bettercap";
-                case 7:
-                    return "bdfproxy.cfg";
                 default:
-                    return "mana-nat-simple-bdf";
+                    return "nat-mana-simple";
             }
         }
     } //end class
@@ -432,7 +400,7 @@ public class ManaFragment extends Fragment {
                 Intent intent =
                         new Intent("com.offsec.nhterm.RUN_SCRIPT_NH");
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.putExtra("com.offsec.nhterm.iInitialCommand", "cd /usr/share/hostapd-wpe/certs && ./bootstrap");
+                intent.putExtra("com.offsec.nhterm.iInitialCommand", "cd /etc/hostapd-wpe/certs/ && ./bootstrap");
                 startActivity(intent);
             });
 
@@ -733,87 +701,6 @@ public class ManaFragment extends Fragment {
             ShellExecuter exe = new ShellExecuter();
             exe.ReadFile_ASYNC(configFilePath, source);
 
-            Button button = rootView.findViewById(R.id.update);
-            button.setOnClickListener(v -> {
-                if (getView() == null) {
-                    return;
-                }
-                EditText source1 = getView().findViewById(R.id.source);
-                String newSource = source1.getText().toString();
-                ShellExecuter exe1 = new ShellExecuter();
-                exe1.SaveFileContents(newSource, configFilePath);
-                NhPaths.showMessage(context, "Source updated");
-            });
-            return rootView;
-        }
-    }
-
-    public static class BdfProxyConfigFragment extends Fragment {
-        private Context context;
-        private String configFilePath;
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            context = getContext();
-            configFilePath = NhPaths.APP_SD_FILES_PATH + "/configs/bdfproxy.cfg";
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.source_short, container, false);
-
-            String description = getResources().getString(R.string.bdfproxy_cfg);
-            TextView desc = rootView.findViewById(R.id.description);
-            desc.setText(description);
-            // use the good one?
-            Log.d("BDFPATH", configFilePath);
-            EditText source = rootView.findViewById(R.id.source);
-            ShellExecuter exe = new ShellExecuter();
-            exe.ReadFile_ASYNC(configFilePath, source);
-
-            Button button = rootView.findViewById(R.id.update);
-            button.setOnClickListener(v -> {
-                if (getView() == null) {
-                    return;
-                }
-                EditText source1 = getView().findViewById(R.id.source);
-                String newSource = source1.getText().toString();
-                ShellExecuter exe1 = new ShellExecuter();
-                exe1.SaveFileContents(newSource, configFilePath);
-                NhPaths.showMessage(context, "Source updated");
-            });
-            return rootView;
-        }
-    }
-
-    public static class ManaStartNatSimpleBdfFragment extends Fragment {
-        private Context context;
-        private String configFilePath;
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            context = getContext();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                configFilePath = NhPaths.CHROOT_PATH() + "/usr/share/mana-toolkit/run-mana/start-nat-simple-bdf-lollipop.sh";
-            } else {
-                configFilePath = NhPaths.CHROOT_PATH() + "/usr/share/mana-toolkit/run-mana/start-nat-simple-bdf-kitkat.sh";
-            }
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.source_short, container, false);
-
-            String description = getResources().getString(R.string.mana_nat_simple_bdf);
-            TextView desc = rootView.findViewById(R.id.description);
-            desc.setText(description);
-            EditText source = rootView.findViewById(R.id.source);
-            ShellExecuter exe = new ShellExecuter();
-            exe.ReadFile_ASYNC(configFilePath, source);
             Button button = rootView.findViewById(R.id.update);
             button.setOnClickListener(v -> {
                 if (getView() == null) {

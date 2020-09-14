@@ -3,17 +3,20 @@ unset LD_PRELOAD
 
 INTERFACE=rndis0
 
-killall dnsmasq 2>/dev/null
-echo 0 > /sys/class/android_usb/android0/enable
-echo mtp,adb > /sys/class/android_usb/android0/functions
-echo 1 > /sys/class/android_usb/android0/enable
+su -c killall arpspoof 2>/dev/null
+wait 50
+su -c killall arpspoof 2>/dev/null
+wait 50
+su -c killall urlsnarff 2>/dev/null
+wait 10
+su -c ifconfig $INTERFACE down
 
 # Restoring iptables rules
-iptables -D FORWARD -i $INTERFACE -j ACCEPT
-iptables -t nat -D POSTROUTING -j MASQUERADE
-iptables -A natctrl_FORWARD -j DROP
+su -c iptables -D FORWARD -i $INTERFACE -j ACCEPT
+su -c iptables -t nat -D POSTROUTING -j MASQUERADE
+su -c iptables -A natctrl_FORWARD -j DROP
 # Remove iface and routes
-ip addr flush dev $INTERFACE
-ip link set $INTERFACE down
+su -c ip addr flush dev $INTERFACE
+su -c ip link set $INTERFACE down
 
 
