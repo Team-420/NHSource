@@ -18,38 +18,34 @@
             android:gravity="center"
             android:padding="4dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ps_ip_address">
+            android:text="@string/ps_ip_address"
+            android:padding="4dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ipaddress"
-                android:ems="10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/ipaddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/ps_port">
+            android:ems="10"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ps_port"
+            android:padding="4dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/port"
-                android:ems="10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/payload"
-            android:padding="4dp"
-            android:layout_marginTop="4dp" />
+            android:padding="4dp" />
 
         <Spinner
             android:id="@+id/payload"
@@ -58,23 +54,20 @@
             android:entries="@array/payloads"
             android:prompt="@string/payload_select" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/ps_payload_url">
+            android:text="@string/ps_payload_url"
+            android:padding="4dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/payloadUrl"
-                android:ems="10"
-                android:inputType="text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/payloadUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"/>
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/powersploitOptionsUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

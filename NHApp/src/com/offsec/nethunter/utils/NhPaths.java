@@ -36,13 +36,11 @@ public class NhPaths implements SharedPreferences.OnSharedPreferenceChangeListen
     public static String APP_SD_FILES_IMG_PATH;
     public static String BUSYBOX;
     public static String MAGISK_DB_PATH;
-    public static String APP_SEARCHSPLOIT_PATH;
 
     private NhPaths(Context context) {
         sharedPreferences = context.getApplicationContext().getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         APP_PATH                        = context.getApplicationContext().getFilesDir().getPath();
-        APP_SEARCHSPLOIT_PATH           = APP_PATH + "/SearchSploit";
         APP_DATABASE_PATH               = APP_PATH.replace("/files", "/databases");
         APP_INITD_PATH                  = APP_PATH + "/etc/init.d";
         APP_SCRIPTS_PATH                = APP_PATH + "/scripts";
@@ -87,7 +85,7 @@ public class NhPaths implements SharedPreferences.OnSharedPreferenceChangeListen
 
     public static String getBusyboxPath(){
         String[] BB_PATHS = {
-                "/system/xbin/busybox",
+                "/system/xbin/busybox_nh",
                 "/system/bin/busybox_nh",
                 APP_SCRIPTS_BIN_PATH + "/busybox_nh"
         };

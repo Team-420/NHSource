@@ -1,6 +1,7 @@
 package com.offsec.nethunter.AsyncTask;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.offsec.nethunter.ChrootManagerFragment;
@@ -8,10 +9,10 @@ import com.offsec.nethunter.utils.NhPaths;
 import com.offsec.nethunter.utils.ShellExecuter;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -79,30 +80,33 @@ public class ChrootManagerAsynctask extends AsyncTask<Object, Integer, Void> {
                     exe.RunAsRootOutput("echo \"[!] The Download has been started...Please wait.\"", ((TextView)objects[0]));
                     int count;
                     URL url = new URL("https://" + objects[1].toString() + objects[2].toString());
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    URLConnection connection = url.openConnection();
+                    connection.connect();
+                    connection.setConnectTimeout(10000);
+                    connection.setReadTimeout(10000);
                     int lengthOfFile = connection.getContentLength();
 
-                    InputStream input = connection.getInputStream();
-                    BufferedInputStream reader = new BufferedInputStream(input);
-                    BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(objects[3].toString()));
+                    InputStream input = new BufferedInputStream(url.openStream(), 8192);
+                    OutputStream output = new FileOutputStream(objects[3].toString());
 
                     byte[] data = new byte[1024];
-                    long bytes = -1;
+                    long total = 0;
 
-                    while ((count = reader.read(data)) != -1) {
-                        bytes += count;
-                        int progress = (int) ((bytes / (float) lengthOfFile) * 100);
+                    while ((count = input.read(data)) != -1) {
+                        total += count;
+                        int progress = (int) ((total / (float) lengthOfFile) * 100);
                         publishProgress(progress);
-                        writer.write(data, 0, count);
+                        output.write(data, 0, count);
                     }
-                    writer.close();
-                    reader.close();
+                    output.flush();
+                    output.close();
+                    input.close();
                     exe.RunAsRootOutput("echo \"[+] Download completed.\"", ((TextView)objects[0]));
                     resultCode = exe.RunAsRootOutput(NhPaths.APP_SCRIPTS_PATH + "/chrootmgr -c \"checksha512 " +
                             exe.RunAsRootOutput("ping -c 1 " + objects[1].toString() + " | head -n1 | sed 's/\\(^.*(\\)\\(.*\\)\\().*(.*$\\)/\\2/g'") +
                             objects[2].toString().replace(".tar.xz","") + ".sha512sum " + objects[3].toString() + "\"", ((TextView)objects[0]));
                 } catch (Exception e) {
-                    exe.RunAsRootOutput("echo \"[-] " + e.getMessage() + "\"", ((TextView)objects[0]));
+                    exe.RunAsRootOutput("echo \"[-]" + e.getMessage() + "\"", ((TextView)objects[0]));
                     resultCode = 1;
                 }
                 break;

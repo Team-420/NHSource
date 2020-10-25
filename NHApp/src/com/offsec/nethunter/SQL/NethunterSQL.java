@@ -29,14 +29,13 @@ public class NethunterSQL extends SQLiteOpenHelper {
     private static final String TABLE_NAME = DATABASE_NAME;
     private static ArrayList<String> COLUMNS = new ArrayList<>();
     private static final String[][] nethunterData = {
-            {"1", "Make rndis0 up", "ifconfig rndis0 up | echo Done", "\\n", "0"},
-            {"2", "Kernel Version", "uname -a", "\\n", "1"},
-            {"3", "Busybox Version (NH_App)", NhPaths.BUSYBOX + " | head -n1", "\\n", "1"},
-            {"4", "System as rw", "mount -o remount,rw / && echo Done ", "\\n", "0"},
-            {"5", "Root Status", "su -v", "\\n", "1"},
-            {"6", "HID status", "ls /dev/hidg* || echo \"HID interface not found.\"", "\\n", "1"},
-            {"7", "Network Interface Status", " ip -o addr show | " + NhPaths.BUSYBOX + " awk '{print $2, $3, $4}'", "\\n", "1"},
-            {"8", "External IP", NhPaths.BUSYBOX + " wget -qO - icanhazip.com || curl ipv4.icanhazip.com", "\\n", "0"}
+            {"1", "Kernel Version", "uname -a", "\\n", "1"},
+            {"2", "Busybox Version", NhPaths.BUSYBOX + " | head -n1", "\\n", "1"},
+            {"3", "Root Status", "su -v", "\\n", "1"},
+            {"4", "HID status", "ls /dev/hidg* || echo \"HID interface not found.\"", "\\n", "1"},
+            {"5", "Nethunter Terminal Status", "[ \"$(pm list packages | grep 'com.offsec.nhterm')\" ] && echo \"Nethunter Terminal is installed.\" || echo \"Nethunter Terminal is NOT yet installed.\"", "\\n", "1"},
+            {"6", "Network Interface Status", " ip -o addr show | " + NhPaths.BUSYBOX + " awk '{print $2, $3, $4}'", "\\n", "1"},
+            {"7", "External IP", NhPaths.BUSYBOX + " wget -qO - icanhazip.com || curl ipv4.icanhazip.com", "\\n", "0"}
     };
 
     public synchronized static NethunterSQL getInstance(Context context){

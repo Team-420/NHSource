@@ -47,7 +47,7 @@ public class ChrootManagerFragment extends Fragment {
 
     public static final String TAG = "ChrootManager";
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final String IMAGE_SERVER = "github.com/Team-420/Chroot/releases/latest";
+    private static final String IMAGE_SERVER = "images.kali.org";
     private static String ARCH = "";
     private static String MINORFULL = "";
     private TextView mountStatsTextView;
@@ -271,7 +271,7 @@ public class ChrootManagerFragment extends Fragment {
             Button restoreButton2 = new Button(activity);
             LinearLayout.LayoutParams optionButtonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             optionButtonParams.setMargins(58,0,58,0);
-            downloadButton1.setText("DOWNLOAD LATEST KALI CHROOT FROM MIRRORED IMAGE");
+            downloadButton1.setText("DOWNLOAD LATEST KALI CHROOT FROM OFFICIAL IMAGE");
             downloadButton1.setLayoutParams(optionButtonParams);
             restoreButton2.setText("RESTORE FROM LOCAL STORAGE\n(.TAR.GZ /.TAR.XZ)");
             restoreButton2.setLayoutParams(optionButtonParams);
@@ -295,7 +295,7 @@ public class ChrootManagerFragment extends Fragment {
                         sharedPreferences.edit().putString(SharePrefTag.CHROOT_DEFAULT_STORE_DOWNLOAD_SHAREPREF_TAG, downloadDir.getAbsolutePath()).apply();
                         if (archSpinner.getSelectedItemPosition() == 0) {
                             ARCH = "arm64";
-                        } else ARCH = "arm64-custom";
+                        } else ARCH = "armhf";
                         if (minorfullSpinner.getSelectedItemPosition() == 0){
                             MINORFULL = "full";
                         } else MINORFULL = "minimal";
@@ -331,7 +331,7 @@ public class ChrootManagerFragment extends Fragment {
                 EditText chrootTarFileEditText = new EditText(activity);
                 LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 editTextParams.setMargins(58,40,58,0);
-                chrootTarHintTextView.setText("Type the full path of your Kali Chroot file:");
+                chrootTarHintTextView.setText("Type the full path of your Kali Chroot tarball file:");
                 chrootTarHintTextView.setLayoutParams(editTextParams);
                 chrootTarFileEditText.setText(sharedPreferences.getString(SharePrefTag.CHROOT_DEFAULT_BACKUP_SHAREPREF_TAG, ""));
                 chrootTarFileEditText.setLayoutParams(editTextParams);
@@ -379,8 +379,8 @@ public class ChrootManagerFragment extends Fragment {
                     .setPositiveButton("I'm sure.", (dialogInterface, i) -> {
                         AlertDialog.Builder adb1 = new AlertDialog.Builder(activity)
                             .setTitle("Warning!")
-                            .setMessage("This is your last chance buddy!")
-                            .setPositiveButton("Just do it!!!.", (dialogInterface1, i1) -> {
+                            .setMessage("This is your last chance!")
+                            .setPositiveButton("Just do it.", (dialogInterface1, i1) -> {
                                 chrootManagerAsynctask = new ChrootManagerAsynctask(ChrootManagerAsynctask.REMOVE_CHROOT);
                                 chrootManagerAsynctask.setListener(new ChrootManagerAsynctask.ChrootManagerAsyncTaskListener() {
                                     @Override
@@ -403,7 +403,7 @@ public class ChrootManagerFragment extends Fragment {
                                 });
                                 chrootManagerAsynctask.execute(resultViewerLoggerTextView);
                             })
-                            .setNegativeButton("Okay, I'm sorry buddy.", (dialogInterface12, i12) -> {
+                            .setNegativeButton("Okay, I'm sorry.", (dialogInterface12, i12) -> {
 
                             });
                         adb1.create().show();
@@ -423,7 +423,7 @@ public class ChrootManagerFragment extends Fragment {
                 setAllButtonEnable(false);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 progressDialog.setTitle("Downloading " + targetDownloadFileName);
-                progressDialog.setMessage("Please do NOT KILL the me or clear me from recent apps!!");
+                progressDialog.setMessage("Please do NOT kill the app or clear recent apps..");
                 progressDialog.setProgress(0);
                 progressDialog.setMax(100);
                 progressDialog.setCancelable(false);
@@ -471,7 +471,7 @@ public class ChrootManagerFragment extends Fragment {
                 }
             }
         });
-        chrootManagerAsynctask.execute(resultViewerLoggerTextView, IMAGE_SERVER, "/download/" + targetDownloadFileName, downloadDir.getAbsolutePath() + "/" + targetDownloadFileName);
+        chrootManagerAsynctask.execute(resultViewerLoggerTextView, IMAGE_SERVER, "/nethunter/" + targetDownloadFileName, downloadDir.getAbsolutePath() + "/" + targetDownloadFileName);
     }
 
     private void setAddMetaPkgButton() {
@@ -507,7 +507,7 @@ public class ChrootManagerFragment extends Fragment {
                 try {
                     Intent intent = new Intent("com.offsec.nhterm.RUN_SCRIPT_NH");
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
-                    intent.putExtra("com.offsec.nhterm.iInitialCommand", NhPaths.makeTermTitle("Updating") + "apt update && apt install " + sb.toString() + " -y && exit");
+                    intent.putExtra("com.offsec.nhterm.iInitialCommand", NhPaths.makeTermTitle("Updating") + "apt update && apt install " + sb.toString() + " -y && echo \"(You can close the terminal now)\n\"");
                     startActivity(intent);
                 } catch (Exception e) {
                     NhPaths.showMessage(context, getString(R.string.toast_install_terminal));

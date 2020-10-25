@@ -49,7 +49,6 @@
     </LinearLayout>
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/set_target"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -133,7 +132,6 @@
         android:orientation="horizontal">
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/apply_spoof"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -142,7 +140,6 @@
             android:textColor="#ffffffff" />
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/refreshSpoof"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

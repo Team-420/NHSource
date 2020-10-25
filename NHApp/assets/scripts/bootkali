@@ -94,22 +94,6 @@ else
 		$BUSYBOX chroot $MNT stop-msf.sh
 	fi
 
-  #NH-FIX, Guide from https://gist.github.com/jmmmbnnn/0c47ee13581602d98e17184a9241e6ea
-  if [ "$1" == "fixnh" ]; then
-    $BUSYBOX chroot $MNT apt update -y
-    $BUSYBOX chroot $MNT apt install -y exploitdb python sqlite3
-    $BUSYBOX chroot $MNT apt upgrade -y exploitdb
-    $BUSYBOX chroot $MNT searchsploit --update
-    $BUSYBOX chroot $MNT sqlite3 SearchSploit 'CREATE TABLE IF NOT EXISTS SearchSploitTable (ID INTEGER PRIMARY KEY, FILE TEXT, DESCRIPTION TEXT, DATE TEXT, AUTHOR TEXT, TYPE TEXT, PLATFORM TEXT, PORT INTEGER DEFAULT 0);'
-    $BUSYBOX chroot $MNT csv2sqlite.py /usr/share/exploitdb/files_exploits.csv SearchSploit SearchSploitTable
-    $BUSYBOX chroot $MNT awk -F "," '{x=(NF-1 == 6) ? $0"," : $0; print x}' /usr/share/exploitdb/files_shellcodes.csv > files_shellcodes_corrected.csv
-    $BUSYBOX chroot $MNT csv2sqlite.py files_shellcodes_corrected.csv SearchSploit SearchSploitTable
-    $BUSYBOX chroot $MNT sqlite3 SearchSploit 'UPDATE SearchSploitTable SET PORT = 0 WHERE PORT IS NULL;'
-    $BUSYBOX chroot $MNT rm files_shellcodes_corrected.csv
-    $BUSYBOX chroot $MNT mv SearchSploit /sdcard/SearchSploit
-    exit
-  fi
-
 	#OPENVPN
 
 	if [ "$1" == "openvpn" ] && [ "$2" == "start" ]; then

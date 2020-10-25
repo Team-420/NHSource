@@ -20,7 +20,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.offsec.nethunter.utils.NhPaths;
 
 import java.util.ArrayList;
@@ -50,8 +49,8 @@ public class NmapFragment extends Fragment {
     private String fastmode;
     private String topports;
 
-    private TextInputEditText searchBar;
-    private TextInputEditText portsBar;
+    private EditText searchBar;
+    private EditText portsBar;
     private Context context;
 
     public NmapFragment() {

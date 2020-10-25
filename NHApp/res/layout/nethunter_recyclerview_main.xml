@@ -23,7 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:layout_marginTop="7dp"
             android:textColor="@color/cardview_light_background"
             android:text="Loading"
             android:textSize="20sp"
@@ -59,13 +58,12 @@
             android:orientation="vertical"/>
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/f_nethunter_item_run_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.8"
             android:text="RUN"
             android:layout_gravity="bottom"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/accent_material_dark" />
     </LinearLayout>
 </LinearLayout>

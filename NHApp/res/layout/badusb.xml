@@ -24,20 +24,19 @@
             android:gravity="center"
             android:text="@string/badusb_description" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/iface">
+            android:text="@string/iface"
+            android:padding="4dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ifc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
+        <EditText
+            android:id="@+id/ifc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"/>
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/updateOptions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

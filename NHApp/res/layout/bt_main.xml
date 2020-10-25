@@ -62,15 +62,12 @@
                     android:layout_weight="15"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.IconOnly"
+                <ImageButton
                     android:id="@+id/refreshStatus"
-                    android:layout_marginTop="2dp"
-                    android:minWidth="44dp"
-                    android:minHeight="40dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:icon="@drawable/ic_action_refresh" />
+                    app:srcCompat="@drawable/ic_action_refresh"
+                    android:layout_weight="1"/>
 
             </LinearLayout>
 
@@ -266,7 +263,6 @@
             </LinearLayout>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/start_scan"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

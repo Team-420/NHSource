@@ -22,11 +22,9 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="12dp"
                 android:gravity="bottom"
-                android:layout_marginEnd="12dp"
                 android:layout_weight="0.9"
                 android:text="Click EDIT button to change your Kali Chroot Path below."/>
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_edit_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -126,7 +124,6 @@
             android:id="@+id/f_chrootmanager_btn_linearlayout">
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_mount_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +133,6 @@
                 android:visibility="gone"/>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_unmount_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -146,7 +142,6 @@
                 android:visibility="gone"/>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_install_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -156,7 +151,6 @@
                 android:visibility="gone"/>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_addmetapkg_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -166,7 +160,6 @@
                 android:visibility="gone"/>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_backupchroot_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -176,7 +169,6 @@
                 android:visibility="gone"/>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_chrootmanager_removechroot_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

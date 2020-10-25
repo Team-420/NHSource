@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -200,13 +199,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Set USB Function"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                    style="?android:attr/buttonStyleSmall"/>
                 <Button
                     android:id="@+id/f_usbarmory_btn_saveusbfuncswitch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="SAVE CONFIG TO DATABASE"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                    android:layout_marginTop="4dp"
+                    android:text="SAVE CONFIG TO DATABASE"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -229,15 +228,15 @@
                             android:layout_height="wrap_content"
                             android:textSize="18sp" />
                     </LinearLayout>
-                    <Button
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.IconOnly"
+                    <ImageButton
                         android:id="@+id/f_usbarmory_imgbtn_reloadUSBStatus"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:adjustViewBounds="false"
                         android:baselineAlignBottom="false"
                         android:cropToPadding="false"
-                        app:icon="@drawable/ic_action_refresh" />
+                        android:layout_weight="0.2"
+                        android:src="@drawable/ic_action_refresh" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -309,14 +308,14 @@
                     android:orientation="horizontal">
                     <Button
                         android:id="@+id/f_usbarmory_btn_mountImage"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="?android:attr/buttonStyleSmall"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
                         android:text="Mount Image" />
                     <Button
                         android:id="@+id/f_usbarmory_btn_unmountImage"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="?android:attr/buttonStyleSmall"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
@@ -352,15 +351,15 @@
                             android:textSize="18sp"
                             android:text="No image is mounted."/>
                     </LinearLayout>
-                    <Button
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.IconOnly"
+                    <ImageButton
                         android:id="@+id/f_usbarmory_imgbtn_reloadMountStatus"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:adjustViewBounds="false"
                         android:baselineAlignBottom="false"
                         android:cropToPadding="false"
-                        app:icon="@drawable/ic_action_refresh" />
+                        android:layout_weight="0.2"
+                        android:src="@drawable/ic_action_refresh" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -436,45 +435,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Design.TextInputLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="0.6"
-                        android:hint="Upstream Interface (e.g. wlan0, rmnet_data0):">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/f_usbarmory_et_usbnetwork_upstreamiface"
-                            android:textSize="18sp"
-                            android:layout_weight="0.4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Design.TextInputLayout"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.6"
-                        android:hint="USB network interface\n(e.g. rndis0, usb0):">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/f_usbarmory_et_usbnetwork_usbfunc"
-                            android:textSize="18sp"
-                            android:layout_weight="0.4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
+                        android:text="Upstream Interface\n(e.g. wlan0, rmnet_data0):"
+                        android:textSize="18sp" />
+                    <EditText
+                        android:id="@+id/f_usbarmory_et_usbnetwork_upstreamiface"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.4"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -482,21 +454,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Design.TextInputLayout"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.6"
-                        android:hint="IP address to be assigned for target:">
+                        android:text="USB network interface\n(e.g. rndis0, usb0):"
+                        android:textSize="18sp" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/f_usbarmory_et_usbnetwork_targetip"
-                            android:textSize="18sp"
-                            android:layout_weight="0.4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
+                    <EditText
+                        android:id="@+id/f_usbarmory_et_usbnetwork_usbfunc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.4"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -504,19 +474,19 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Design.TextInputLayout"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="IP address for your USB Network Interface:">
+                        android:layout_weight="0.6"
+                        android:text="IP address to be assigned for target:"
+                        android:textSize="18sp" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/f_usbarmory_et_usbnetwork_gatewayip"
-                            android:textSize="18sp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
+                    <EditText
+                        android:id="@+id/f_usbarmory_et_usbnetwork_targetip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.4"
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -524,29 +494,45 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.Design.TextInputLayout"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="IP Subnet Mask (in Octet format):">
+                        android:text="IP address for your USB Network Interface:"
+                        android:textSize="18sp" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/f_usbarmory_et_usbnetwork_ipsubnetmask"
-                            android:textSize="18sp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                    <EditText
+                        android:id="@+id/f_usbarmory_et_usbnetwork_gatewayip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint=""
+                        android:textSize="18sp" />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="IP Subnet Mask (in Octet format):"
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/f_usbarmory_et_usbnetwork_ipsubnetmask"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint=""
+                        android:textSize="18sp" />
                 </LinearLayout>
 
                 <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:id="@+id/f_usbarmory_btn_runusbnetworktethering"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="RUN IN NETHUNTER TERMINAL"/>
                 <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:id="@+id/f_usbarmory_btn_saveusbnetworktethering"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -64,7 +64,7 @@
                     android:layout_toStartOf="@+id/f_macchanger_setHostname_btn" />
 
                 <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?android:attr/buttonStyleSmall"
                     android:id="@+id/f_macchanger_setHostname_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,14 +119,13 @@
                     android:layout_marginRight="16dp"
                     android:textColor="@color/cardview_light_background"/>
 
-                <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.IconOnly"
+                <ImageButton
                     android:id="@+id/f_macchanger_reloadMAC_imgbtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:contentDescription="@string/reloadMAC"
-                    app:icon="@drawable/ic_action_refresh" />
+                    app:srcCompat="@drawable/ic_action_refresh" />
 
             </LinearLayout>
 
@@ -247,7 +246,6 @@
                 </LinearLayout>
 
                 <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:id="@+id/f_macchanger_regenerate_mac_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -255,7 +253,6 @@
                     android:visibility="gone"/>
 
                 <Button
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:id="@+id/f_macchanger_clear_mac_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -265,14 +262,12 @@
             </LinearLayout>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_macchanger_set_mac_btn"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"/>
 
             <Button
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:id="@+id/f_macchanger_reset_mac_btn"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

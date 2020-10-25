@@ -2,15 +2,14 @@ package com.offsec.nethunter;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -24,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,6 +40,7 @@ import com.offsec.nethunter.utils.CheckForRoot;
 import com.offsec.nethunter.utils.NhPaths;
 import com.offsec.nethunter.utils.PermissionCheck;
 import com.offsec.nethunter.utils.SharePrefTag;
+import com.winsontan520.wversionmanager.library.WVersionManager;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -82,6 +81,7 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
     private PermissionCheck permissionCheck;
     private BroadcastReceiver nethunterReceiver;
     public static Boolean isBackPressEnabled = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,10 +285,7 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
 
         setContentView(R.layout.base_layout);
 
-        ImageView o = findViewById(R.id.base_background);
-        Drawable oa = WallpaperManager.getInstance(this).getDrawable();
-        o.setImageDrawable(oa);
-
+        //set kali wallpaper as background
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setHomeButtonEnabled(true);
@@ -305,6 +302,7 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
 
         FloatingActionButton readmeButton = navigationHeadView.findViewById(R.id.info_fab);
         readmeButton.setOnTouchListener((v, event) -> {
+            //checkUpdate();
             showLicense();
             return false;
         });
@@ -316,10 +314,8 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
         final String buildTime = sdf.format(BuildConfig.BUILD_TIME);
         TextView buildInfo1 = navigationHeadView.findViewById(R.id.buildinfo1);
         TextView buildInfo2 = navigationHeadView.findViewById(R.id.buildinfo2);
-        TextView buildInfo3 = navigationHeadView.findViewById(R.id.buildinfo3);
-        buildInfo1.setText(String.format("Version: %s, by Martin Valba", BuildConfig.VERSION_NAME));
-        buildInfo2.setText(String.format("Material Design by Mirivan (t.me/cxblack)"));
-        buildInfo3.setText(String.format("Built at %s", buildTime));
+        buildInfo1.setText(String.format("Version: %s", BuildConfig.VERSION_NAME, Build.TAGS));
+        buildInfo2.setText(String.format("Made for kekhunter", BuildConfig.BUILD_NAME, buildTime));
 
         if (navigationView != null) {
             setupDrawerContent(navigationView);
@@ -327,8 +323,7 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // detail for android 5 devices
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorBars));
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorBars));
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.darkTitle));
         }
 
         getSupportFragmentManager()
@@ -356,6 +351,15 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
         startService(new Intent(getApplicationContext(), CompatCheckService.class));
+    }
+
+    private void checkUpdate() {
+        WVersionManager versionManager = new WVersionManager(this);
+        versionManager.setVersionContentUrl("https://images.offensive-security.com/version.txt");
+        versionManager.setUpdateUrl("https://images.offensive-security.com/latest.apk");
+        versionManager.checkVersion();
+        versionManager.setUpdateNowLabel("Update");
+        versionManager.setIgnoreThisVersionLabel("Ignore");
     }
 
     private void showLicense() {

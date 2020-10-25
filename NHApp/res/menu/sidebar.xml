@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group>
         <item
             android:id="@+id/nethunter_item"
             android:icon="@drawable/ic_action_home"
-            android:title="Home" />
+            android:title="@string/drawertitlenethunter" />
         <item
             android:id="@+id/createchroot_item"
             android:icon="@drawable/ic_action_android"
-            android:title="Kali Chroot Manager" />
-        <item
-            android:id="@+id/usbarmory_item"
-            android:icon="@drawable/ic_action_keyboard"
-            android:title="@string/drawertitleusbarmory" />
+            android:title="@string/drawertitlecreatechroot" />
     </group>
     <group android:id="@+id/chrootDependentGroup">
+        <!-- <item
+             android:id="@+id/kalilauncher_item"
+             android:icon="@drawable/ic_action_launch"
+             android:title="@string/drawertitlekalilauncher" />   -->
          <item
              android:id="@+id/kaliservices_item"
              android:icon="@drawable/ic_action_settings_applications"
@@ -33,6 +32,10 @@
              android:id="@+id/vnc_item"
              android:icon="@drawable/ic_action_home"
              android:title="@string/drawertitlevncmanager" />
+        <item
+            android:id="@+id/usbarmory_item"
+            android:icon="@drawable/ic_action_keyboard"
+            android:title="@string/drawertitleusbarmory" />
          <item
              android:id="@+id/hid_item"
              android:icon="@drawable/ic_action_keyboard"

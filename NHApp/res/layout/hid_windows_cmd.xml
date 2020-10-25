@@ -17,18 +17,21 @@
             android:gravity="center"
             android:padding="4dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+		<TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/source"
+            android:padding="4dp" />
+            
+        <EditText
+            android:id="@+id/windowsCmdSource"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/source">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/windowsCmdSource"
-                android:ems="10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
+            android:ems="10"
+            android:gravity="top"
+            android:layout_marginLeft="1dip"
+            android:layout_marginRight="1dip" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -40,21 +43,21 @@
                 android:layout_height="wrap_content"
                 android:text="@string/load"
                 android:id="@+id/windowsCmdLoad"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/save"
                 android:id="@+id/windowsCmdSave"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
                 android:id="@+id/windowsCmdUpdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/update"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                style="?android:attr/buttonBarButtonStyle"/>
         </LinearLayout>
 
     </LinearLayout>

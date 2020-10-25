@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -59,8 +58,8 @@ public class USBArmoryFragment extends Fragment {
     private TextView mountedImageTextView;
     private TextView mountedImageHintTextView;
     private TextView usbNetworkTetheringHintTextView;
-    private Button reloadUSBStateImageButton;
-    private Button reloadMountStateButton;
+    private ImageButton reloadUSBStateImageButton;
+    private ImageButton reloadMountStateButton;
     private LinearLayout imageMounterLL;
     private LinearLayout usbNetworkTetheringLL;
     private Button setUSBIfaceButton;
@@ -75,7 +74,7 @@ public class USBArmoryFragment extends Fragment {
     private Spinner usbNetworkAttackModeSpinner;
     private Spinner adbSpinner;
     private EditText[] usbSwitchInfoEditTextGroup = new EditText[5];
-    private EditText[] usbNetworkInfoEditTextGroup = new TextInputEditText[5];
+    private EditText[] usbNetworkInfoEditTextGroup = new EditText[5];
 
     public static USBArmoryFragment newInstance(int sectionNumber) {
         USBArmoryFragment fragment = new USBArmoryFragment();

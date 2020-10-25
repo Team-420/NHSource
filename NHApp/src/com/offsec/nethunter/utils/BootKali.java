@@ -210,7 +210,7 @@ public class BootKali {
         return "su -c \"" + TERM_CMD + "\"";
     }
 
-    // this string is the command to pop a kali shell (intent to the terminal, pass this a command)
+    // this string is the comand to pop a kaly shell (intent to the terminal, pass this a command)
     public String GET_KALI_SHELL_CMD() {
         return "su -c \"clear && " + BOOTKALI + "/bin/login -f root \"";
     }

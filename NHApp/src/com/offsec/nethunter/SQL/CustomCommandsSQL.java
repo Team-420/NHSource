@@ -30,26 +30,23 @@ public class CustomCommandsSQL extends SQLiteOpenHelper {
     private static final String TABLE_NAME = DATABASE_NAME;
     private static ArrayList<String> COLUMNS = new ArrayList<>();
     private static final String[][] customcommandsData = {
-            {"1", "Start wlan1 in monitor mode",
-                    "ip link set wlan1 down && iw wlan1 set monitor control && ip link set wlan1 up;exit",
+            {"1", "Update Kali Metapackages",
+                    "apt update && apt-get -y upgrade && apt -y full-upgrade && apt -y dist-upgrade",
                     "kali", "interactive", "0"},
             {"2", "Launch Wifite",
                     "wifite",
                     "kali", "interactive", "0"},
             {"3", "Start wlan0 in monitor mode",
-                    "su -c svc wifi disable && su -c sleep 2 &&su -c echo 4 > /sys/module/wlan/parameters/con_mode && su -c sleep 2 && su -c killall -q -SIGSTOP lowi-server || su -c true && ip link set wlan0 up && echo done\" && exit",
+                    "su -c \"ip link set wlan0 down; echo 4 > /sys/module/wlan/parameters/con_mode;ip link set wlan0 up\";exit",
                     "android", "interactive", "0"},
             {"4", "Stop wlan0 monitor mode",
-                    "su -c ip link set wlan0 down && sleep 5 && su -c echo 0 > /sys/module/wlan/parameters/con_mode && exit",
+                    "su -c \"ip link set wlan0 down; echo 0 > /sys/module/wlan/parameters/con_mode;ip link set wlan0 up; svc wifi enable\";exit",
                     "android", "interactive", "0"},
-            {"5", "Install nh scripts to /system/bin",
-                "su -c cp -rf /data/data/com.offsec.nethunter/files/scripts/* /system/bin/ && exit",
-                "android", "interactive", "0"},
-            {"6", "Install and upgrade nethunter",
-                    "apt update && apt upgrade -y && apt install -y msfpc exploitdb kali-linux-nethunter libpcap-dev bettercap hostapd hostapd-wpe hostapd-mana python-dev && echo ' If something here fails run python1 setup ' && pip install twisted && pip install pyopenssl && pip install scapy && pip install dnspython && pip install pcapy && pip install service_identity && pip install dnspython && update-alternatives --set iptables /usr/sbin/iptables-legacy && exit",
+            {"5", "Start wlan1 in monitor mode",
+                    "ip link set wlan1 down && iw wlan1 set monitor control && ip link set wlan1 up;exit",
                     "kali", "interactive", "0"},
-            {"7", "Install python1 pip",
-                    "wget https://raw.githubusercontent.com/Team-420/Chroot/master/get-pip.py && apt install -y python2 && python2 get-pip.py && rm -rf get-pip.py && exit",
+            {"6", "Start wlan2 in monitor mode",
+                    "ip link set wlan2 down && iw wlan2 set monitor control && ip link set wlan2 up;exit",
                     "kali", "interactive", "0"}
     };
 

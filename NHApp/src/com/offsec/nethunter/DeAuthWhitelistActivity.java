@@ -16,7 +16,6 @@ import java.util.Locale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class DeAuthWhitelistActivity extends AppCompatActivity {
 
@@ -30,8 +29,7 @@ public class DeAuthWhitelistActivity extends AppCompatActivity {
         setContentView(R.layout.deauth_whitelist);
         if (Build.VERSION.SDK_INT >= 21) {
             // detail for android 5 devices
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorBars));
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorBars));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.darkTitle));
         }
 
         EditText whitelist = findViewById(R.id.deauth_modify);

@@ -31,7 +31,6 @@
         android:gravity="center_horizontal">
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/MaintainChrootInTerminal"
@@ -40,7 +39,6 @@
             android:paddingRight="16sp" />
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/installkalichrootbutton"
@@ -56,8 +54,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/statusText"
         android:paddingLeft="16sp"
-        android:paddingTop="16sp"
-        android:paddingBottom="16sp" />
+        android:paddingTop="16sp" />
 
     <ScrollView
         android:layout_width="match_parent"

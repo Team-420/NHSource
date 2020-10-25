@@ -334,8 +334,8 @@ class ExploitLoader extends BaseAdapter {
 
     private void start(String file) {
         String[] command = new String[1];
-        command[0] = "su -c bootkali file2hid-file " + file;
-        String test = "su -c bootkali file2hid-file " + file;
+        command[0] = "su -c /data/data/com.offsec.nethunter/files/scripts/bootkali file2hid-file " + file;
+        String test = "su -c /data/data/com.offsec.nethunter/files/scripts/bootkali file2hid-file " + file;
         Log.d("Exe:", test);
         ShellExecuter exe = new ShellExecuter();
         exe.RunAsRoot(command);

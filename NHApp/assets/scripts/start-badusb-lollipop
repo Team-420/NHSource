@@ -1,3 +1,4 @@
 #!/system/bin/sh
 unset LD_PRELOAD
-cd /sdcard/nh_files/configs/ && su -c sh startbadusb-lollipop.sh CHOICE=1 && su -c sh startbadusb-lollipop.sh CHOICE=2 && su -c sh startbadusb-lollipop.sh CHOICE=3
+cd /sdcard/nh_files/configs/ && sh startbadusb-lollipop.sh
+
