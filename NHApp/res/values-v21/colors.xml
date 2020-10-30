@@ -3,7 +3,7 @@
 
     <item name="blue" type="color">#4B82AC</item>
     <item name="clearTitle" type="color">#fcfcfc</item>
-    <item name="clearText" type="color">#d9d9d9</item>
+    <item name="clearText" type="color">#ffffff</item>
 
     <item name="darkTitle" type="color">#000000</item>
 

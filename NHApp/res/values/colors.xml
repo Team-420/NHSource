@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <item name="blue" type="color">#4B82AC</item>
+    <item name="blue" type="color">#373737</item>
     <item name="clearTitle" type="color">#fcfcfc</item>
     <item name="clearText" type="color">#d9d9d9</item>
-
-    <item name="darkTitle" type="color">#000000</item>
+    <color name="colorPrimary">#313233</color>
+    <color name="colorPrimaryDark">#363737</color>
+    <color name="colorAccent">#3C3C3C</color>
+    <color name="colorBackground">#00000080</color>
 
 
 </resources>
