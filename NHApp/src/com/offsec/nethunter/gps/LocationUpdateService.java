@@ -2,51 +2,95 @@ package com.offsec.nethunter.gps;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.StrictMode;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.TaskStackBuilder;
+
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.offsec.nethunter.R;
+import com.offsec.nethunter.utils.NhPaths;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.lang.reflect.Method;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.net.InetAddress;
+import java.util.Date;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-
-public class LocationUpdateService extends Service implements GpsdServer.ConnectionListener,
+public class LocationUpdateService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private KaliGPSUpdates.Receiver updateReceiver;
+    public static final String CHANNEL_ID = "NethunterLocationUpdateChannel";
+    public static final int NOTIFY_ID = 1004;
     private static final String TAG = "LocationUpdateService";
     private GoogleApiClient apiClient = null;
-    private boolean requestedLocationUpdates = false;
-    private Socket clientSocket = null;
+    private DatagramSocket dSock = null;
+    private InetAddress udpDestAddr = null;
+    private static final String notificationTitle = "GPS Provider running";
+    private static final String notificationText = "Sending GPS data to udp://127.0.0.1:" + NhPaths.GPS_PORT;
+    private String lastLocationSourceReceived = "None";
+    private String lastLocationSourcePublished = "None";
+    private double lastLocationLatitude = 0.0;
+    private double lastLocationLongitude = 0.0;
+    private int lastLocationSats = 0;
+    private double lastLocationAccuracy = 0.0;
+    private Date lastLocationTime = new Date();
+    private String lastNotificationText = null;
 
     private final IBinder binder = new ServiceBinder();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
         return Service.START_NOT_STICKY;
+    }
+
+    @Override
+    public void onCreate() {
+        Log.d(TAG, "onCreate");
+        super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "NethunterPersistentChannelService",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
     }
 
     /**
@@ -56,16 +100,22 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
      * work with a "0" or an empty value.
      */
     public String formatSatellites(Location location) {
+        int satellites = 0;
+        Bundle bundle = location.getExtras();
+        // this doesn't work on all phones
+        if(bundle != null)
+            satellites = bundle.getInt("satellites");
+        if(satellites > 4)
+            return "" + satellites;
+
         if (location.getProvider().equals(LocationManager.GPS_PROVIDER)) {
-            Bundle bundle = location.getExtras();
-            return bundle != null
-                    ? "" + bundle.getInt("satellites")
-                    : "";
-        } else if (location.getProvider().equals(LocationManager.NETWORK_PROVIDER))
-            // fake this variable
-            return "1";
-        else
-            return "";
+            if(satellites == 0)
+                return "";
+            else
+                return "" + satellites;
+        }
+        // We aren't using pure GPS.  Fake this variable
+        return "4";
     }
 
     /**
@@ -133,15 +183,8 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
     }
 
     @Override
-    public void onSocketConnected(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-    }
-
-    @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (requestedLocationUpdates) {
-            startLocationUpdates();
-        }
+        Log.d(TAG,"onConnected");
     }
 
     @Override
@@ -163,46 +206,63 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind");
         return binder;
     }
 
+    public class MyConnectionCallback implements GoogleApiClient.ConnectionCallbacks
+    {
 
-    public void requestUpdates(KaliGPSUpdates.Receiver receiver) {
-        requestedLocationUpdates = true;
-        this.updateReceiver = receiver;
-
-        GpsdServer gpsdServer = null;
-        gpsdServer = new GpsdServer(this);
-        if (gpsdServer != null) {
-            gpsdServer.execute(null, null);
-            Log.d(TAG, "GPSDServer Async Task Begun");
-        } else {
-            Log.d(TAG, "Error starting gpsd server");
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            Log.d(TAG,"onConnected (MyConnectionCallback)");
+            startLocationUpdates();
         }
 
+        @Override
+        public void onConnectionSuspended(int i) {
 
+        }
+    }
+    public void requestUpdates(KaliGPSUpdates.Receiver receiver) {
+        Log.d(TAG, "In requestUpdates");
+        this.updateReceiver = receiver;
         if (apiClient == null) {
             apiClient = new GoogleApiClient.Builder(LocationUpdateService.this, this, this)
                     .addApi(LocationServices.API)
                     .build();
         }
-
         if (!apiClient.isConnected()) {
+            apiClient.registerConnectionCallbacks(new MyConnectionCallback());
             apiClient.connect();
-        } else {
-            startLocationUpdates();
         }
     }
 
     public void stopUpdates() {
         Log.d(TAG, "In stopUpdates");
-        requestedLocationUpdates = false;
-        this.updateReceiver = null;
+
+        firstupdate = true;
+        // unregister with LocationServices
+        LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, locationListener);
+
+        // unregister our NmeaListener
+        LocationManager locationManager = (LocationManager) getSystemService(Service.LOCATION_SERVICE);
+        try { // reference: https://stackoverflow.com/questions/57975969/accessing-nmea-on-android-api-level-24-when-compiled-for-target-api-level-29
+            //noinspection JavaReflectionMemberAccess
+            Method removeNmeaListener =
+                    LocationManager.class.getMethod("removeNmeaListener", GpsStatus.NmeaListener.class);
+            removeNmeaListener.invoke(locationManager, nmeaListener);
+            Log.d(TAG, "removeNmeaListener success");
+        } catch (Exception exception) {
+            // oh well
+        }
+        Log.d(TAG, "calling stopSelf");
         stopSelf();
     }
 
-    private void startLocationUpdates() {
-        Log.d(TAG, "in startLocationUpdates");
+    public void startLocationUpdates() {
+        Log.d(TAG, "In startLocationUpdates");
+
         final LocationRequest lr = LocationRequest.create()
                 .setExpirationDuration(1000 * 3600 * 2) /*2 hrs*/
                 .setFastestInterval(100L)
@@ -210,15 +270,140 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
                 .setMaxWaitTime(600L)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-
         Log.d(TAG, "Requesting permissions marshmallow");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
+            // register with Location services, so we can construct fake NMEA data
             LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, lr, locationListener);
+
+            // try to register for actual NMEA data straight from the GPS
+            LocationManager locationManager = (LocationManager) getSystemService(Service.LOCATION_SERVICE);
+            try { // reference: https://stackoverflow.com/questions/57975969/accessing-nmea-on-android-api-level-24-when-compiled-for-target-api-level-29
+                //noinspection JavaReflectionMemberAccess
+                Method addNmeaListener =
+                        LocationManager.class.getMethod("addNmeaListener", GpsStatus.NmeaListener.class);
+                addNmeaListener.invoke(locationManager, nmeaListener);
+                Log.d(TAG, "addNmeaListener success");
+            } catch (Exception exception) {
+                // oh well
+            }
         }
+
+        // turn on a Persistent Notification so we can continue to get location updates even when backgrounded
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        // TODO have this result intent open the NH app
+        Intent resultIntent = new Intent();
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setAutoCancel(false)
+                .setSmallIcon(R.drawable.ic_stat_ic_nh_notificaiton)
+                .setContentText(notificationText)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setContentTitle(notificationTitle)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setContentIntent(resultPendingIntent);
+        Notification notification = builder.build();
+        notificationManagerCompat.notify(NOTIFY_ID, notification);
+
+        this.startForeground(NOTIFY_ID, notification);
+        // start a thread that will update our Notification every second
+        new Thread(() -> {
+            while(true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {
+                }
+                if(lastLocationLatitude != 0.0)
+                    updateNotification();
+            }
+        }).start();
     }
+
+    private void updateNotification() {
+        Date now = new Date();
+        long age = (now.getTime() - lastLocationTime.getTime()) / 1000;
+        String ageStr = "?";
+        if(age <= 10)
+            ageStr = "current";
+        else if(age < 60)
+            ageStr = "" + age + "s";
+        else if(age < 3600)
+            ageStr = "" + (age/60) + "m";
+        else
+            ageStr = "" + (age/3600) + "h";
+        String updatedText = String.format("Latitude: %2.5f  Longitude: %3.5f  +/- %5.1fm\nSource: %s  Age: %s  Satellites: %d",
+                lastLocationLatitude, lastLocationLongitude, lastLocationAccuracy,
+                lastLocationSourcePublished, ageStr, lastLocationSats);
+
+        Log.d(TAG, "Notification Update: " + updatedText);
+        // we're not actually going to set this text, but we are going to use it to see if anything has changed since last update
+        // if nothing has changed, we won't update the notification
+        if(updatedText.equals(lastNotificationText))
+            return;
+        lastNotificationText = updatedText;
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        // TODO have this result intent open the NH app
+        Intent resultIntent = new Intent();
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.gps_notification);
+        contentView.setTextViewText(R.id.gps_notification_latitude, String.format("%2.5f", lastLocationLatitude));
+        contentView.setTextViewText(R.id.gps_notification_longitude, String.format("%3.5f", lastLocationLongitude));
+        contentView.setTextViewText(R.id.gps_notification_accuracy, String.format("%5.1fm", lastLocationAccuracy));
+
+        contentView.setTextViewText(R.id.gps_notification_source, lastLocationSourcePublished);
+        contentView.setTextViewText(R.id.gps_notification_age, ageStr);
+        if(lastLocationSourcePublished.equals("GPS"))
+            contentView.setTextViewText(R.id.gps_notification_sats, String.format("%d", lastLocationSats));
+        else
+            contentView.setTextViewText(R.id.gps_notification_sats, "-");
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setAutoCancel(false)
+                .setSmallIcon(R.drawable.ic_stat_ic_nh_notificaiton)
+                .setContent(contentView)
+                // .setContentText("contentText")
+                // .setStyle(new NotificationCompat.BigTextStyle().bigText(updatedText))
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomContentView(contentView)
+                .setContentTitle(notificationTitle)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setContentIntent(resultPendingIntent);
+        Notification notification = builder.build();
+        notificationManagerCompat.notify(NOTIFY_ID, notification);
+        Log.d(TAG, "notification sent");
+    }
+
+    private final GpsStatus.NmeaListener nmeaListener = new GpsStatus.NmeaListener() {
+        @Override
+        public void onNmeaReceived(long l, String s) {
+            if(!s.startsWith("$GPGGA"))
+                return;
+            String[] fields = s.split(",");
+            int fixType = 0;
+            // int sats = 0;
+            try {
+                fixType = Integer.parseInt(fields[6]);
+                // sats = Integer.parseInt(fields[7]);
+            } catch (NumberFormatException ignored) {
+            } catch (ArrayIndexOutOfBoundsException ignored) {
+            }
+            if(fixType == 0)
+                return;
+            // Log.d(TAG, "sats = " + sats);
+            Log.d(TAG, "Real NMEA: " + s);
+            lastLocationSourceReceived = "NmeaListener";
+            publishLocation(s, "GPS");
+        }
+    };
 
     private boolean firstupdate = true;
     private final LocationListener locationListener = new LocationListener() {
@@ -226,34 +411,93 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
         public void onLocationChanged(Location location) {
             String nmeaSentence = nmeaSentenceFromLocation(location);
 
-            // Workaround to allow network operations in main thread
-            if (android.os.Build.VERSION.SDK_INT > 8)
-            {
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-            }
-
-            if (clientSocket != null) {
-
-                PrintWriter out = null;
-                try {
-                    out = new PrintWriter(clientSocket.getOutputStream(), true);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Log.d(TAG, "NMEA update: "+nmeaSentence);
-                out.println(nmeaSentence);
-
-                if (updateReceiver != null) {
-                    if (firstupdate) {
-                        firstupdate = false;
-                        updateReceiver.onFirstPositionUpdate();
-                    }
-                    updateReceiver.onPositionUpdate(nmeaSentence);
-                }
-            }
+            Log.d(TAG, "Constructed NMEA: "+nmeaSentence);
+            // we will only publish these constructed sentences if we aren't currently getting real ones from the NmeaListener
+            if(lastLocationSourceReceived.equals("LocationListener"))
+                publishLocation(nmeaSentence, "Network");
+            lastLocationSourceReceived = "LocationListener";
         }
     };
+
+    private void publishLocation(String nmeaSentence, String source) {
+        // Workaround to allow network operations in main thread
+        if (android.os.Build.VERSION.SDK_INT > 8)
+        {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+        try {
+            String[] fields = nmeaSentence.split(",");
+            String latStr = fields[2];
+            String ns = fields[3];
+            String lonStr = fields[4];
+            String ew = fields[5];
+            int sats = Integer.parseInt(fields[7]);
+            double accuracy = Float.parseFloat(fields[8]) * 19.0; // why 19.0?  see https://gitlab.com/gpsd/gpsd/-/blob/master/libgpsd_core.c, P_UERE_NO_DGPS
+
+            int latDeg = Integer.parseInt(latStr.substring(0, 2));
+            double latMin = Float.parseFloat(latStr.substring(2));
+            double lat = latDeg + latMin/60.0;
+            int lonDeg = Integer.parseInt(lonStr.substring(0, 3));
+            double lonMin = Float.parseFloat(lonStr.substring(3));
+            double lon = lonDeg + lonMin/60.0;
+            if(ns.toUpperCase().equals("S"))
+                lat *= -1;
+            if(ew.toUpperCase().equals("W"))
+                lon *= -1;
+
+            lastLocationLatitude = lat;
+            lastLocationLongitude = lon;
+            lastLocationSats = sats;
+            lastLocationAccuracy = accuracy;
+            lastLocationTime = new Date();
+            lastLocationSourcePublished = source;
+        } catch (NumberFormatException ignored) {
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        }
+
+        if (updateReceiver != null) {
+            if (firstupdate) {
+                firstupdate = false;
+                updateReceiver.onFirstPositionUpdate();
+            }
+            updateReceiver.onPositionUpdate(nmeaSentence);
+        }
+
+        if(udpDestAddr == null)
+        {
+            try {
+                udpDestAddr = Inet4Address.getByName("127.0.0.1");
+            } catch (UnknownHostException e) {
+                Log.d(TAG, "UnknownHostException: " + e.toString());
+            }
+        }
+
+        if(dSock == null) {
+            try {
+                // SocketAddress destAddr = new InetSocketAddress("127.0.0.1", NhPaths.GPS_PORT);
+                dSock = new DatagramSocket();
+            } catch (final java.net.SocketException e) {
+                Log.d(TAG, "SocketException: " + e.toString());
+                dSock = null;
+            }
+        }
+
+        if(dSock != null && udpDestAddr != null) {
+            try {
+                // dSock.setBroadcast(true);
+                nmeaSentence += "\n";
+                byte[] buf = nmeaSentence.getBytes();
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, udpDestAddr, NhPaths.GPS_PORT);
+                dSock.send(packet);
+                // dSock.close();
+            } catch (final IOException e) {
+                Log.d(TAG, "IOException: " + e.toString());
+                dSock = null;
+                udpDestAddr = null;
+            }
+        }
+    }
 
 
     private String nmeaSentenceFromLocation(Location location) {
@@ -265,7 +509,7 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
         String innerSentence = "GPGGA," + time + "," +
                 position + ",1," +
                 formatSatellites(location) + "," +
-                location.getAccuracy() + "," +
+                location.getAccuracy()/19.0 + "," + // why 19.0?  see https://gitlab.com/gpsd/gpsd/-/blob/master/libgpsd_core.c, P_UERE_NO_DGPS
                 formatAltitude(location) + ",,,,";
 
 //        Adds checksum and initial $
@@ -279,10 +523,9 @@ public class LocationUpdateService extends Service implements GpsdServer.Connect
     public void onDestroy() {
         Log.d(TAG, "OnDestroy");
         if (apiClient != null && apiClient.isConnected()) {
-            apiClient.disconnect();
             LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, locationListener);
+            apiClient.disconnect();
         }
         super.onDestroy();
     }
 }
-

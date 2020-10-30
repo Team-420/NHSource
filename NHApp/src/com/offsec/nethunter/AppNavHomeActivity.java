@@ -195,11 +195,25 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
     }
 
     @Override
+    public boolean onReceiverReattach(KaliGPSUpdates.Receiver receiver) {
+        if(updateServiceBound && locationUpdatesRequested) {
+
+            this.locationUpdateReceiver = receiver;
+            if(locationService != null) {
+                locationService.requestUpdates(locationUpdateReceiver);
+                return true; // reattached
+            }
+        }
+        return false; // nothing to reattach to
+    }
+
+    @Override
     public void onLocationUpdatesRequested(KaliGPSUpdates.Receiver receiver) {
         locationUpdatesRequested = true;
         this.locationUpdateReceiver = receiver;
         Intent intent = new Intent(getApplicationContext(), LocationUpdateService.class);
         bindService(intent, locationServiceConnection, Context.BIND_AUTO_CREATE);
+
     }
 
     private LocationUpdateService locationService;
@@ -258,8 +272,15 @@ public class AppNavHomeActivity extends AppCompatActivity implements KaliGPSUpda
 
     @Override
     public void onStopRequested() {
+        locationUpdatesRequested = false;
         if (locationService != null) {
             locationService.stopUpdates();
+            locationService = null;
+        }
+        if(updateServiceBound) {
+            updateServiceBound = false;
+            unbindService(locationServiceConnection);
+
         }
     }
 

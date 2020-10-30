@@ -53,7 +53,7 @@ android {
         targetSdkVersion 29
         //noinspection HighAppVersionCode
         versionCode 2020030300
-        versionName "2020.3"
+        versionName "1.0"
         multiDexEnabled true
     }
 

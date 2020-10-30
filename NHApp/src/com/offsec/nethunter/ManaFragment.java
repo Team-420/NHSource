@@ -358,44 +358,44 @@ public class ManaFragment extends Fragment {
                 ifc.post(new Runnable() {
                     @Override
                     public void run() {
-                    /*
-                     * Interface
-                     */
+                        /*
+                         * Interface
+                         */
                         if (matcherIfc.find()) {
                             String ifcValue = matcherIfc.group(1);
                             ifc.setText(ifcValue);
                         }
-                    /*
-                     * bssid
-                     */
+                        /*
+                         * bssid
+                         */
                         if (matcherBssid.find()) {
                             String bssidVal = matcherBssid.group(1);
                             bssid.setText(bssidVal);
                         }
-                    /*
-                     * ssid
-                     */
+                        /*
+                         * ssid
+                         */
                         if (matcherSsid.find()) {
                             String ssidVal = matcherSsid.group(1);
                             ssid.setText(ssidVal);
                         }
-                    /*
-                     * channel
-                     */
+                        /*
+                         * channel
+                         */
                         if (matcherChannel.find()) {
                             String channelVal = matcherChannel.group(1);
                             channel.setText(channelVal);
                         }
-                    /*
-                     * enable_mana
-                     */
+                        /*
+                         * enable_mana
+                         */
                         if (matcherEnableKarma.find()) {
                             String enableKarmaVal = matcherEnableKarma.group(1);
                             enableKarma.setText(enableKarmaVal);
                         }
-                   /*
-                   * mana_loud
-                   */
+                        /*
+                         * mana_loud
+                         */
                         if (matcherKarmaLoud.find()) {
                             String karmaLoudVal = matcherKarmaLoud.group(1);
                             karmaLoud.setText(karmaLoudVal);
@@ -432,7 +432,7 @@ public class ManaFragment extends Fragment {
                 Intent intent =
                         new Intent("com.offsec.nhterm.RUN_SCRIPT_NH");
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.putExtra("com.offsec.nhterm.iInitialCommand", "cd /usr/share/hostapd-wpe/certs && ./bootstrap");
+                intent.putExtra("com.offsec.nhterm.iInitialCommand", "cd /etc/hostapd-wpe/certs/ && ./bootstrap");
                 startActivity(intent);
             });
 
@@ -506,37 +506,37 @@ public class ManaFragment extends Fragment {
                 ifc.post(new Runnable() {
                     @Override
                     public void run() {
-                    /*
-                     * Interface
-                     */
+                        /*
+                         * Interface
+                         */
                         if (matcherIfc.find()) {
                             String ifcValue = matcherIfc.group(1);
                             ifc.setText(ifcValue);
                         }
-                    /*
-                     * bssid
-                     */
+                        /*
+                         * bssid
+                         */
                         if (matcherBssid.find()) {
                             String bssidVal = matcherBssid.group(1);
                             bssid.setText(bssidVal);
                         }
-                    /*
-                     * ssid
-                     */
+                        /*
+                         * ssid
+                         */
                         if (matcherSsid.find()) {
                             String ssidVal = matcherSsid.group(1);
                             ssid.setText(ssidVal);
                         }
-                    /*
-                     * channel
-                     */
+                        /*
+                         * channel
+                         */
                         if (matcherChannel.find()) {
                             String channelVal = matcherChannel.group(1);
                             channel.setText(channelVal);
                         }
-                    /*
-                     * Private Key File
-                     */
+                        /*
+                         * Private Key File
+                         */
                         if (matcherPrivateKey.find()) {
                             String PrivateKeyVal = matcherPrivateKey.group(1);
                             privatekey.setText(PrivateKeyVal);
